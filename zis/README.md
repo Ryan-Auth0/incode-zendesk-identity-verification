@@ -1,5 +1,10 @@
 # ZIS bundle — Incode Identity Verification
 
+> **⚠️ Deferred to V2.** V1 pilots use polling from the ZAF sidebar app
+> instead of ZIS. See the root [README](../README.md) for why. The
+> artefacts here are kept so V2 can switch to webhook-driven updates
+> without rewriting the flow logic.
+
 Zendesk Integration Services (ZIS) resources that receive Incode webhook
 callbacks and update the Zendesk ticket.
 
@@ -17,7 +22,13 @@ callbacks and update the Zendesk ticket.
   the installation record via the ZIS REST API. Authenticates with an
   admin API token.
 
-## Deploy (V1 pilot)
+## Deploy (V2, after Marketplace Partner Program approval)
+
+The script below registers the integration and uploads the bundle, which
+works against the public ZIS registry API. What does NOT work without
+Partner Program keys is the **OAuth install flow** that produces the
+ingest URL — Zendesk's auth server rejects state JWTs signed with keys
+submitted via the registry API.
 
 ```bash
 export ZENDESK_SUBDOMAIN=d3v-incode

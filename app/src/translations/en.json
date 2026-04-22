@@ -26,6 +26,14 @@
       "label": "Notification mode",
       "helpText": "One of 'email_and_sms', 'email_only', 'sms_only'."
     },
+    "pollIntervalSeconds": {
+      "label": "Poll interval (seconds)",
+      "helpText": "How often the sidebar checks Incode for status updates. Default 7."
+    },
+    "maxPollDurationMinutes": {
+      "label": "Maximum polling duration (minutes)",
+      "helpText": "Stop polling after this many minutes without a terminal status. Default 30."
+    },
     "msg_pending": {
       "label": "Pending message",
       "helpText": "Shown in the sidebar while verification is in progress."
@@ -37,10 +45,6 @@
     "msg_failed": {
       "label": "Failure message",
       "helpText": "Shown in the sidebar and posted as an internal note when verification fails."
-    },
-    "zisIngestUrl": {
-      "label": "ZIS ingest URL",
-      "helpText": "The Zendesk Integration Services inbound webhook URL (from zcli zis:upload). Stored securely."
     }
   }
 }

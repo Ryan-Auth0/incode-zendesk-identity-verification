@@ -29,9 +29,10 @@
     { "name": "incodeEnvironment", "type": "text", "required": true, "default": "sandbox" },
     { "name": "incodeConfigurationId", "type": "text", "required": true },
     { "name": "notificationMode", "type": "text", "required": true, "default": "email_and_sms" },
+    { "name": "pollIntervalSeconds", "type": "text", "required": true, "default": "7" },
+    { "name": "maxPollDurationMinutes", "type": "text", "required": true, "default": "30" },
     { "name": "msg_pending", "type": "multiline", "default": "Verification in progress. The customer has been sent a secure link to complete identity verification." },
     { "name": "msg_success", "type": "multiline", "default": "Identity verified. You can safely proceed with sensitive actions on this ticket." },
-    { "name": "msg_failed", "type": "multiline", "default": "Verification failed. Retry or escalate per your fraud process." },
-    { "name": "zisIngestUrl", "type": "text", "secure": true, "scopes": ["body"] }
+    { "name": "msg_failed", "type": "multiline", "default": "Verification failed. Retry or escalate per your fraud process." }
   ]
 }

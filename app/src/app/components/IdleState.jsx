@@ -3,7 +3,7 @@ import { Button } from '@zendeskgarden/react-buttons'
 import { MD, SM } from '@zendeskgarden/react-typography'
 import { Notification, Title } from '@zendeskgarden/react-notifications'
 import styled from 'styled-components'
-import { startVerification, setStatus } from '../lib/incode'
+import { startVerification } from '../lib/incode'
 
 export default function IdleState({ client, ticket, onStarted }) {
   const [loading, setLoading] = useState(false)
@@ -15,15 +15,20 @@ export default function IdleState({ client, ticket, onStarted }) {
     setLoading(true)
     setError(null)
     try {
-      await startVerification({
+      const { interviewId } = await startVerification({
         client,
         settings: ticket.settings,
         ticketId: ticket.ticketId,
         email: ticket.requesterEmail,
         phone: ticket.requesterPhone
       })
-      await setStatus({ client, fieldIds: ticket.fieldIds, status: 'incode_pending' })
-      onStarted?.()
+
+      if (interviewId) {
+        await ticket.setField('interviewId', interviewId)
+      }
+      await ticket.setField('status', 'incode_pending')
+      await ticket.reload()
+      onStarted?.(interviewId)
     } catch (err) {
       setError(friendlyError(err))
     } finally {

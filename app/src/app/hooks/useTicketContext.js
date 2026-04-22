@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useClient } from './useClient'
 
 const FIELD_TITLES = {
@@ -22,56 +22,70 @@ export function useTicketContext() {
     error: null
   })
 
+  const load = useCallback(async () => {
+    try {
+      const fieldIds = await resolveFieldIds(client)
+      const metadata = await client.metadata()
+      const keys = [
+        'ticket.id',
+        'ticket.requester.email',
+        'ticket.requester.phone',
+        `ticket.customField:custom_field_${fieldIds.status}`,
+        `ticket.customField:custom_field_${fieldIds.interviewId}`,
+        `ticket.customField:custom_field_${fieldIds.verifiedAt}`
+      ]
+      const data = await client.get(keys)
+
+      setCtx({
+        loaded: true,
+        ticketId: data['ticket.id'],
+        requesterEmail: data['ticket.requester.email'] || null,
+        requesterPhone: data['ticket.requester.phone'] || null,
+        status: data[`ticket.customField:custom_field_${fieldIds.status}`] || null,
+        interviewId: data[`ticket.customField:custom_field_${fieldIds.interviewId}`] || null,
+        verifiedAt: data[`ticket.customField:custom_field_${fieldIds.verifiedAt}`] || null,
+        fieldIds,
+        settings: metadata.settings || {},
+        error: null
+      })
+    } catch (err) {
+      setCtx((prev) => ({ ...prev, loaded: true, error: err.message || String(err) }))
+    }
+  }, [client])
+
   useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      try {
-        const fieldIds = await resolveFieldIds(client)
-        const metadata = await client.metadata()
-        const keys = [
-          'ticket.id',
-          'ticket.requester.email',
-          'ticket.requester.phone',
-          `ticket.customField:custom_field_${fieldIds.status}`,
-          `ticket.customField:custom_field_${fieldIds.interviewId}`,
-          `ticket.customField:custom_field_${fieldIds.verifiedAt}`
-        ]
-        const data = await client.get(keys)
-        if (cancelled) return
-
-        setCtx({
-          loaded: true,
-          ticketId: data['ticket.id'],
-          requesterEmail: data['ticket.requester.email'] || null,
-          requesterPhone: data['ticket.requester.phone'] || null,
-          status: data[`ticket.customField:custom_field_${fieldIds.status}`] || null,
-          interviewId: data[`ticket.customField:custom_field_${fieldIds.interviewId}`] || null,
-          verifiedAt: data[`ticket.customField:custom_field_${fieldIds.verifiedAt}`] || null,
-          fieldIds,
-          settings: metadata.settings || {},
-          error: null
-        })
-      } catch (err) {
-        if (!cancelled) {
-          setCtx((prev) => ({ ...prev, loaded: true, error: err.message || String(err) }))
-        }
-      }
-    }
-
     load()
+  }, [load])
 
-    const statusChange = () => load()
-    const target = `ticket.custom_field_${ctx.fieldIds?.status}.changed`
-    if (ctx.fieldIds?.status) client.on(target, statusChange)
+  const setField = useCallback(
+    async (fieldKey, value) => {
+      const fieldIds = ctx.fieldIds
+      if (!fieldIds) return
+      const id = fieldIds[fieldKey]
+      if (!id) return
+      await client.set(`ticket.customField:custom_field_${id}`, value)
+    },
+    [client, ctx.fieldIds]
+  )
 
-    return () => {
-      cancelled = true
-      if (ctx.fieldIds?.status) client.off(target, statusChange)
-    }
-  }, [client, ctx.fieldIds?.status])
+  const postInternalNote = useCallback(
+    async (body) => {
+      const { 'ticket.id': id } = await client.get('ticket.id')
+      await client.request({
+        url: `/api/v2/tickets/${id}.json`,
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify({
+          ticket: { comment: { body, public: false } }
+        })
+      })
+    },
+    [client]
+  )
 
-  return ctx
+  const reload = useCallback(() => load(), [load])
+
+  return { ...ctx, setField, postInternalNote, reload }
 }
 
 async function resolveFieldIds(client) {

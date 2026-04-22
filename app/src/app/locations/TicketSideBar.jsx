@@ -53,7 +53,7 @@ const TicketSideBar = () => {
   return (
     <Wrapper ref={containerRef}>
       {state === 'idle' && <IdleState client={client} ticket={ticket} />}
-      {state === 'pending' && <PendingState ticket={ticket} />}
+      {state === 'pending' && <PendingState client={client} ticket={ticket} />}
       {state === 'success' && <SuccessState ticket={ticket} />}
       {state === 'failed' && <FailedState client={client} ticket={ticket} />}
     </Wrapper>
