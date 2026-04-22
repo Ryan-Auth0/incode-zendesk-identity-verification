@@ -1,0 +1,12 @@
+{
+  "parameters": {
+    "incodeApiKey": "REPLACE_ME_SANDBOX_KEY",
+    "incodeEnvironment": "sandbox",
+    "incodeConfigurationId": "REPLACE_ME_CONFIG_ID",
+    "notificationMode": "email_and_sms",
+    "msg_pending": "Verification in progress. The customer has been sent a secure link to complete identity verification.",
+    "msg_success": "Identity verified. You can safely proceed with sensitive actions on this ticket.",
+    "msg_failed": "Verification failed. Retry or escalate per your fraud process.",
+    "zisIngestUrl": "https://d3v-incode.zendesk.com/api/services/zis/inbound_webhooks/generic/ingest/REPLACE_ME_TOKEN"
+  }
+}

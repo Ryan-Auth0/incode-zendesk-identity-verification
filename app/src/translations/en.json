@@ -1,0 +1,46 @@
+{
+  "app": {
+    "name": "Incode Identity Verification",
+    "short_description": "Trigger Incode biometric identity verification on the ticket requester with one click.",
+    "long_description": "Lets a Zendesk Support agent send the ticket requester a secure Incode identity verification link (SMS + email). Verification results are written back to the ticket via ZIS — three custom fields plus an internal note — so agents can confidently proceed with sensitive actions.",
+    "installation_instructions": "Configure your Incode API key, environment (sandbox/production), configuration ID, ZIS ingest URL, and notification mode. Three custom ticket fields will be provisioned automatically.",
+    "title": "Incode Identity Verification"
+  },
+  "ticket_sidebar": {
+    "title": "Identity verification"
+  },
+  "parameters": {
+    "incodeApiKey": {
+      "label": "Incode API key",
+      "helpText": "The B2B API key from your Incode tenant. Stored securely."
+    },
+    "incodeEnvironment": {
+      "label": "Environment",
+      "helpText": "Either 'sandbox' (routes to demo-api.incode.com) or 'production' (routes to api.incode.com)."
+    },
+    "incodeConfigurationId": {
+      "label": "Configuration ID",
+      "helpText": "The Incode onboarding flow configuration ID to use."
+    },
+    "notificationMode": {
+      "label": "Notification mode",
+      "helpText": "One of 'email_and_sms', 'email_only', 'sms_only'."
+    },
+    "msg_pending": {
+      "label": "Pending message",
+      "helpText": "Shown in the sidebar while verification is in progress."
+    },
+    "msg_success": {
+      "label": "Success message",
+      "helpText": "Shown in the sidebar and posted as an internal note when verification succeeds."
+    },
+    "msg_failed": {
+      "label": "Failure message",
+      "helpText": "Shown in the sidebar and posted as an internal note when verification fails."
+    },
+    "zisIngestUrl": {
+      "label": "ZIS ingest URL",
+      "helpText": "The Zendesk Integration Services inbound webhook URL (from zcli zis:upload). Stored securely."
+    }
+  }
+}

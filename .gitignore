@@ -1,0 +1,17 @@
+node_modules/
+dist/
+tmp/
+.DS_Store
+*.log
+
+# zcli dev-time parameter values — contains secrets
+**/zcli.apps.config.json
+
+# env files that may contain secrets
+.env
+.env.local
+
+# editor junk
+.vscode/
+.idea/
+*.swp

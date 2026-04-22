@@ -1,0 +1,15 @@
+{
+  "ticket_fields": {
+    "incode_verification_status": {
+      "type": "tagger",
+      "title": "Incode Verification Status",
+      "custom_field_options": [
+        { "name": "Pending", "value": "incode_pending" },
+        { "name": "Success", "value": "incode_success" },
+        { "name": "Failed",  "value": "incode_failed" }
+      ]
+    },
+    "incode_interview_id": { "type": "text", "title": "Incode Interview ID" },
+    "incode_verified_at":  { "type": "date", "title": "Incode Verified At" }
+  }
+}

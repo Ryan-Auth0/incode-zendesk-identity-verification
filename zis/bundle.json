@@ -1,0 +1,113 @@
+{
+  "zis_template_version": "2019-10-14",
+  "name": "incode_identity_verification",
+  "description": "Receives Incode verification webhooks and updates the ticket",
+  "resources": {
+    "update_ticket": {
+      "type": "ZIS::Action::Http",
+      "properties": {
+        "name": "update_ticket",
+        "description": "PUT /api/v2/tickets/{id}.json with Incode verification fields + internal note",
+        "definition": {
+          "method": "PUT",
+          "path": "https://d3v-incode.zendesk.com/api/v2/tickets/{{$.parameters.ticket_id}}.json",
+          "headers": [
+            { "key": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "schema": {
+          "type": "object",
+          "required": ["ticket_id", "ticket"],
+          "properties": {
+            "ticket_id": { "type": "string" },
+            "ticket": {
+              "type": "object",
+              "properties": {
+                "custom_fields": { "type": "array" },
+                "comment": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "incode_verification_webhook": {
+      "type": "ZIS::Flow",
+      "properties": {
+        "name": "incode_verification_webhook",
+        "definition": {
+          "StartAt": "route",
+          "States": {
+            "route": {
+              "Type": "Choice",
+              "Choices": [
+                { "Variable": "$.data.onboardingStatus", "StringEquals": "SESSION_SUCCEEDED",   "Next": "update_success" },
+                { "Variable": "$.data.onboardingStatus", "StringEquals": "ONBOARDING_FINISHED", "Next": "update_success" },
+                { "Variable": "$.data.onboardingStatus", "StringEquals": "SESSION_FAILED",      "Next": "update_failed"  },
+                { "Variable": "$.data.onboardingStatus", "StringEquals": "ONBOARDING_FAILED",   "Next": "update_failed"  },
+                { "Variable": "$.data.onboardingStatus", "StringEquals": "REJECTED",            "Next": "update_failed"  }
+              ],
+              "Default": "update_pending"
+            },
+            "update_success": {
+              "Type": "Action",
+              "ActionName": "zis:incode_identity_verification:action:update_ticket",
+              "Parameters": {
+                "ticket_id.$": "$.data.externalCustomerId",
+                "ticket": {
+                  "custom_fields": [
+                    { "id.$": "$.bundle.status_field_id",      "value": "incode_success" },
+                    { "id.$": "$.bundle.interview_field_id",   "value.$": "$.data.interviewId" },
+                    { "id.$": "$.bundle.verified_at_field_id", "value.$": "$.data.completedAt" }
+                  ],
+                  "comment": {
+                    "body.$": "$.bundle.msg_success",
+                    "public": false
+                  }
+                }
+              },
+              "End": true
+            },
+            "update_failed": {
+              "Type": "Action",
+              "ActionName": "zis:incode_identity_verification:action:update_ticket",
+              "Parameters": {
+                "ticket_id.$": "$.data.externalCustomerId",
+                "ticket": {
+                  "custom_fields": [
+                    { "id.$": "$.bundle.status_field_id",      "value": "incode_failed" },
+                    { "id.$": "$.bundle.interview_field_id",   "value.$": "$.data.interviewId" },
+                    { "id.$": "$.bundle.verified_at_field_id", "value.$": "$.data.completedAt" }
+                  ],
+                  "comment": {
+                    "body.$": "$.bundle.msg_failed",
+                    "public": false
+                  }
+                }
+              },
+              "End": true
+            },
+            "update_pending": {
+              "Type": "Action",
+              "ActionName": "zis:incode_identity_verification:action:update_ticket",
+              "Parameters": {
+                "ticket_id.$": "$.data.externalCustomerId",
+                "ticket": {
+                  "custom_fields": [
+                    { "id.$": "$.bundle.status_field_id",    "value": "incode_pending" },
+                    { "id.$": "$.bundle.interview_field_id", "value.$": "$.data.interviewId" }
+                  ],
+                  "comment": {
+                    "body.$": "$.bundle.msg_pending",
+                    "public": false
+                  }
+                }
+              },
+              "End": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

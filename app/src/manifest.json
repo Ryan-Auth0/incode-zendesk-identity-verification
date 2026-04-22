@@ -1,0 +1,37 @@
+{
+  "name": "Incode Identity Verification",
+  "author": {
+    "name": "Incode",
+    "email": "support@incode.com",
+    "url": "https://incode.com"
+  },
+  "defaultLocale": "en",
+  "private": true,
+  "version": "1.0.0",
+  "frameworkVersion": "2.0",
+  "singleInstall": true,
+  "location": {
+    "support": {
+      "ticket_sidebar": {
+        "url": "http://localhost:3000/",
+        "flexible": true
+      }
+    }
+  },
+  "domainWhitelist": [
+    "demo-api.incode.com",
+    "auth.demo.incode.com",
+    "api.incode.com",
+    "auth.incode.com"
+  ],
+  "parameters": [
+    { "name": "incodeApiKey", "type": "text", "secure": true, "required": true, "scopes": ["header"] },
+    { "name": "incodeEnvironment", "type": "text", "required": true, "default": "sandbox" },
+    { "name": "incodeConfigurationId", "type": "text", "required": true },
+    { "name": "notificationMode", "type": "text", "required": true, "default": "email_and_sms" },
+    { "name": "msg_pending", "type": "multiline", "default": "Verification in progress. The customer has been sent a secure link to complete identity verification." },
+    { "name": "msg_success", "type": "multiline", "default": "Identity verified. You can safely proceed with sensitive actions on this ticket." },
+    { "name": "msg_failed", "type": "multiline", "default": "Verification failed. Retry or escalate per your fraud process." },
+    { "name": "zisIngestUrl", "type": "text", "secure": true, "scopes": ["body"] }
+  ]
+}
