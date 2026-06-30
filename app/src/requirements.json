@@ -4,12 +4,23 @@
       "type": "tagger",
       "title": "Incode Verification Status",
       "custom_field_options": [
-        { "name": "Pending", "value": "incode_pending" },
-        { "name": "Success", "value": "incode_success" },
-        { "name": "Failed",  "value": "incode_failed" }
+        { "name": "Pending",         "value": "incode_pending" },
+        { "name": "Success",         "value": "incode_success" },
+        { "name": "Failed",          "value": "incode_failed" },
+        { "name": "Manual Review",   "value": "incode_manual_review" }
       ]
     },
-    "incode_interview_id": { "type": "text", "title": "Incode Interview ID" },
-    "incode_verified_at":  { "type": "date", "title": "Incode Verified At" }
+    "incode_interview_id": {
+      "type": "text",
+      "title": "Incode Interview ID"
+    },
+    "incode_verified_at": {
+      "type": "date",
+      "title": "Incode Verified At"
+    },
+    "incode_session_history": {
+      "type": "textarea",
+      "title": "Incode Session History"
+    }
   }
 }

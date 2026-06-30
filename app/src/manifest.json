@@ -7,7 +7,7 @@
   },
   "defaultLocale": "en",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "frameworkVersion": "2.0",
   "singleInstall": true,
   "location": {
@@ -19,20 +19,73 @@
     }
   },
   "domainWhitelist": [
-    "demo-api.incode.com",
+    "demo-api.incodesmile.com",
+    "saas-api.incodesmile.com",
     "auth.demo.incode.com",
-    "api.incode.com",
     "auth.incode.com"
   ],
   "parameters": [
-    { "name": "incodeApiKey", "type": "text", "secure": true, "required": true, "scopes": ["header"] },
-    { "name": "incodeEnvironment", "type": "text", "required": true, "default": "sandbox" },
-    { "name": "incodeConfigurationId", "type": "text", "required": true },
-    { "name": "notificationMode", "type": "text", "required": true, "default": "email_and_sms" },
-    { "name": "pollIntervalSeconds", "type": "text", "required": true, "default": "7" },
-    { "name": "maxPollDurationMinutes", "type": "text", "required": true, "default": "30" },
-    { "name": "msg_pending", "type": "multiline", "default": "Verification in progress. The customer has been sent a secure link to complete identity verification." },
-    { "name": "msg_success", "type": "multiline", "default": "Identity verified. You can safely proceed with sensitive actions on this ticket." },
-    { "name": "msg_failed", "type": "multiline", "default": "Verification failed. Retry or escalate per your fraud process." }
+    {
+      "name": "incodeEnvironment",
+      "type": "text",
+      "required": true,
+      "default": "demo",
+      "helpText": "Enter 'demo' for the Demo environment (demo-api.incodesmile.com) or 'production' for Production (saas-api.incodesmile.com)."
+    },
+    {
+      "name": "incodeApiKey",
+      "type": "text",
+      "secure": true,
+      "required": true,
+      "scopes": ["header"],
+      "helpText": "Your Incode B2B API key from the Incode dashboard."
+    },
+    {
+      "name": "incodeClientId",
+      "type": "text",
+      "required": true,
+      "helpText": "OAuth Client ID from Incode dashboard → Integrations → Default client credentials."
+    },
+    {
+      "name": "incodeClientSecret",
+      "type": "text",
+      "required": true,
+      "helpText": "OAuth Client Secret from Incode dashboard → Integrations → Default client credentials."
+    },
+    {
+      "name": "incodeIntegrationReference",
+      "type": "text",
+      "required": true,
+      "helpText": "Integration Reference from Incode dashboard → Integrations."
+    },
+    {
+      "name": "incodeLinkExpiryMinutes",
+      "type": "text",
+      "required": false,
+      "default": "30",
+      "helpText": "How long (in minutes) the verification link stays active. Default: 30."
+    },
+    {
+      "name": "incodeWebhookSecret",
+      "type": "text",
+      "secure": true,
+      "required": false,
+      "helpText": "The x-incode-secret value used to validate incoming Incode webhook events."
+    },
+    {
+      "name": "msg_pending",
+      "type": "multiline",
+      "default": "Verification in progress. The customer has been sent a secure link to complete identity verification."
+    },
+    {
+      "name": "msg_success",
+      "type": "multiline",
+      "default": "Identity verified. You can safely proceed with sensitive actions on this ticket."
+    },
+    {
+      "name": "msg_failed",
+      "type": "multiline",
+      "default": "Verification failed. Retry or escalate per your fraud process."
+    }
   ]
 }

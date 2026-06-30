@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { useClient } from './useClient'
 
 const FIELD_TITLES = {
-  status: 'Incode Verification Status',
-  interviewId: 'Incode Interview ID',
-  verifiedAt: 'Incode Verified At'
+  status:         'Incode Verification Status',
+  interviewId:    'Incode Interview ID',
+  verifiedAt:     'Incode Verified At',
+  sessionHistory: 'Incode Session History'
 }
 
 export function useTicketContext() {
@@ -12,11 +13,14 @@ export function useTicketContext() {
   const [ctx, setCtx] = useState({
     loaded: false,
     ticketId: null,
+    requesterId: null,
     requesterEmail: null,
     requesterPhone: null,
+    requesterName: null,
     status: null,
     interviewId: null,
     verifiedAt: null,
+    sessionHistory: null,
     fieldIds: null,
     settings: null,
     error: null
@@ -26,24 +30,32 @@ export function useTicketContext() {
     try {
       const fieldIds = await resolveFieldIds(client)
       const metadata = await client.metadata()
+
       const keys = [
         'ticket.id',
+        'ticket.requester.id',
         'ticket.requester.email',
         'ticket.requester.phone',
+        'ticket.requester.name',
         `ticket.customField:custom_field_${fieldIds.status}`,
         `ticket.customField:custom_field_${fieldIds.interviewId}`,
-        `ticket.customField:custom_field_${fieldIds.verifiedAt}`
+        `ticket.customField:custom_field_${fieldIds.verifiedAt}`,
+        `ticket.customField:custom_field_${fieldIds.sessionHistory}`
       ]
+
       const data = await client.get(keys)
 
       setCtx({
         loaded: true,
-        ticketId: data['ticket.id'],
+        ticketId:       data['ticket.id'],
+        requesterId:    data['ticket.requester.id'] || null,
         requesterEmail: data['ticket.requester.email'] || null,
         requesterPhone: data['ticket.requester.phone'] || null,
-        status: data[`ticket.customField:custom_field_${fieldIds.status}`] || null,
-        interviewId: data[`ticket.customField:custom_field_${fieldIds.interviewId}`] || null,
-        verifiedAt: data[`ticket.customField:custom_field_${fieldIds.verifiedAt}`] || null,
+        requesterName:  data['ticket.requester.name'] || null,
+        status:         data[`ticket.customField:custom_field_${fieldIds.status}`] || null,
+        interviewId:    data[`ticket.customField:custom_field_${fieldIds.interviewId}`] || null,
+        verifiedAt:     data[`ticket.customField:custom_field_${fieldIds.verifiedAt}`] || null,
+        sessionHistory: data[`ticket.customField:custom_field_${fieldIds.sessionHistory}`] || null,
         fieldIds,
         settings: metadata.settings || {},
         error: null
@@ -53,15 +65,11 @@ export function useTicketContext() {
     }
   }, [client])
 
-  useEffect(() => {
-    load()
-  }, [load])
+  useEffect(() => { load() }, [load])
 
   const setField = useCallback(
     async (fieldKey, value) => {
-      const fieldIds = ctx.fieldIds
-      if (!fieldIds) return
-      const id = fieldIds[fieldKey]
+      const id = ctx.fieldIds?.[fieldKey]
       if (!id) return
       await client.set(`ticket.customField:custom_field_${id}`, value)
     },
@@ -88,24 +96,24 @@ export function useTicketContext() {
   return { ...ctx, setField, postInternalNote, reload }
 }
 
+// ---------------------------------------------------------------------------
+// Resolve custom field IDs by title — cached in sessionStorage
+// ---------------------------------------------------------------------------
 async function resolveFieldIds(client) {
   const cached = readCache()
   if (cached) return cached
 
-  const res = await client.request({
-    url: '/api/v2/ticket_fields.json',
-    type: 'GET'
-  })
-
+  const res = await client.request({ url: '/api/v2/ticket_fields.json', type: 'GET' })
   const byTitle = {}
   for (const field of res.ticket_fields || []) {
     byTitle[field.title] = field.id
   }
 
   const ids = {
-    status: byTitle[FIELD_TITLES.status],
-    interviewId: byTitle[FIELD_TITLES.interviewId],
-    verifiedAt: byTitle[FIELD_TITLES.verifiedAt]
+    status:         byTitle[FIELD_TITLES.status],
+    interviewId:    byTitle[FIELD_TITLES.interviewId],
+    verifiedAt:     byTitle[FIELD_TITLES.verifiedAt],
+    sessionHistory: byTitle[FIELD_TITLES.sessionHistory]
   }
 
   if (!ids.status || !ids.interviewId || !ids.verifiedAt) {
@@ -119,21 +127,15 @@ async function resolveFieldIds(client) {
   return ids
 }
 
-const CACHE_KEY = 'incode_field_ids_v1'
+const CACHE_KEY = 'incode_field_ids_v2'
 
 function readCache() {
   try {
     const raw = sessionStorage.getItem(CACHE_KEY)
     return raw ? JSON.parse(raw) : null
-  } catch {
-    return null
-  }
+  } catch { return null }
 }
 
 function writeCache(ids) {
-  try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify(ids))
-  } catch {
-    // sessionStorage may be unavailable in some sandbox configs — non-fatal
-  }
+  try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(ids)) } catch { /* non-fatal */ }
 }

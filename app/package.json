@@ -16,6 +16,7 @@
   "dependencies": {
     "@zendeskgarden/css-bedrock": "^9.1.1",
     "@zendeskgarden/react-buttons": "^8.76.3",
+    "@zendeskgarden/react-forms": "^8.76.9",
     "@zendeskgarden/react-grid": "^8.76.3",
     "@zendeskgarden/react-loaders": "^8.76.9",
     "@zendeskgarden/react-notifications": "^8.76.9",
@@ -24,6 +25,7 @@
     "@zendeskgarden/react-typography": "^8.76.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-is": "^19.2.7",
     "styled-components": "^5.3.6"
   },
   "devDependencies": {
